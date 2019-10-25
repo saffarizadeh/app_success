@@ -27,7 +27,7 @@ class ApiCrawler(object):
             if type == 'app':
                 data = page['results'][0]
             elif type == 'chart':
-                   data = page['feed']['results']
+                data = page['feed']['results']
         except:
             pass
         return data
