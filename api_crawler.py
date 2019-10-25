@@ -21,7 +21,7 @@ class ApiCrawler(object):
             app_ids.append(app['id'])
         return app_ids
 
-    def crawl_list(self):
+    def crawl(self):
         self.to_crawl_list = list(set(self.to_crawl_list))
         while self.to_crawl_list:
             app_id = self.to_crawl_list.pop(0)
@@ -49,4 +49,4 @@ class ApiCrawler(object):
 
 c = ApiCrawler()
 c.create_crawl_list_from_rss()
-c.crawl_list()
+c.crawl()
