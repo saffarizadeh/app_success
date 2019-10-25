@@ -22,9 +22,9 @@ class ApiCrawler(object):
         return app_ids
 
     def crawl_list(self):
-        to_crawl_set = list(set(self.to_crawl_list))
-        while to_crawl_set:
-            app_id = to_crawl_set.pop(0)
+        self.to_crawl_list = list(set(self.to_crawl_list))
+        while self.to_crawl_list:
+            app_id = self.to_crawl_list.pop(0)
             url = 'https://itunes.apple.com/lookup?id=%s' % app_id
             try:
                 self.crawled_data[app_id] = self.download_json_from_url(url, 'app')
