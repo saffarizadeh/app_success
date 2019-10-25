@@ -5,18 +5,32 @@ class ApiCrawler(object):
         self.crawled_apps = []
         self.crawled_data = {}
         self.to_crawl_list = []
+        self.chart_types =  ['top-free', 'top-grossing', 'top-paid']
 
     def create_crawl_list_from_rss(self):
-        for chart_type in ['top-free', 'top-grossing', 'top-paid']:
+        for chart_type in self.chart_types:
             url = 'https://rss.itunes.apple.com/api/v1/us/ios-apps/%s/all/200/explicit.json' % chart_type
             chart_json = self.download_json_from_url(url, 'chart')
-            self.to_crawl_list.extend(self.apps_from_chart(chart_json))
+            if chart_json:
+                app_ids = self.app_ids_from_chart(chart_json)
+                self.to_crawl_list.extend(app_ids)
 
-    def apps_from_chart(self, chart_json):
+    def app_ids_from_chart(self, chart_json):
         app_ids = []
         for app in chart_json:
             app_ids.append(app['id'])
         return app_ids
+
+    def crawl_list(self):
+        to_crawl_set = list(set(self.to_crawl_list))
+        while to_crawl_set:
+            app_id = to_crawl_set.pop(0)
+            url = 'https://itunes.apple.com/lookup?id=%s' % app_id
+            try:
+                self.crawled_data[app_id] = self.download_json_from_url(url, 'app')
+                self.crawled_apps.append(app_id)
+            except:
+                print('Something went wrong with %s.' % app_id)
 
     def download_json_from_url(self, url, type):
         data = None
@@ -31,19 +45,6 @@ class ApiCrawler(object):
         except:
             pass
         return data
-
-    def crawl_list(self):
-        to_crawl_set = list(set(self.to_crawl_list))
-        while to_crawl_set:
-            app_id = to_crawl_set.pop(0)
-            url = 'https://itunes.apple.com/lookup?id=%s' % app_id
-            try:
-                self.crawled_data[app_id] = self.download_json_from_url(url, 'app')
-                self.crawled_apps.append(app_id)
-            except:
-                print('Something went wrong with %s.' % app_id)
-
-
 
 
 c = ApiCrawler()
